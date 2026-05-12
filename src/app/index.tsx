@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, FlatList, Text, Pressable } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View, SectionList, Text, Pressable } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './_layout';
@@ -10,8 +10,19 @@ import { FloatingButton } from '../components/FloatingButton';
 
 export default function NotesScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
-  const { search, setSearch, filteredNotes, handleLongPress } = useNotes();
+  const { search, setSearch, pinnedNotes, otherNotes, handleLongPress } = useNotes();
   const router = useRouter();
+
+  const sections = useMemo(() => {
+    const s = [];
+    if (pinnedNotes.length > 0) {
+      s.push({ title: 'PINNED', data: pinnedNotes });
+    }
+    if (otherNotes.length > 0) {
+      s.push({ title: 'NOTES', data: otherNotes });
+    }
+    return s;
+  }, [pinnedNotes, otherNotes]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -32,8 +43,8 @@ export default function NotesScreen() {
 
       <SearchBar value={search} onChangeText={setSearch} />
 
-      <FlatList
-        data={filteredNotes}
+      <SectionList
+        sections={sections}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <NoteCard 
@@ -42,7 +53,11 @@ export default function NotesScreen() {
             onLongPress={() => handleLongPress(item.id, item.isPinned)}
           />
         )}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={[styles.sectionHeader, { color: theme.textSecondary }]}>{title}</Text>
+        )}
         contentContainerStyle={styles.listContent}
+        stickySectionHeadersEnabled={false}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="document-text-outline" size={64} color={theme.textSecondary} />
@@ -64,6 +79,14 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     marginRight: 10,
+  },
+  sectionHeader: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 16,
+    marginBottom: 8,
+    marginTop: 16,
+    letterSpacing: 1,
   },
   listContent: {
     padding: 16,

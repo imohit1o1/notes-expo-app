@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { createContext, useContext, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";
 import { colors, ThemeColors } from "../theme";
+import { NotesProvider } from "../context/NotesContext";
 
 type ThemeContextType = {
   theme: ThemeColors;
@@ -28,19 +29,21 @@ export default function RootLayout() {
 
   return (
     <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
-      <StatusBar style={isDark ? "light" : "dark"} />
-      <Stack
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: theme.background,
-          },
-          headerTintColor: theme.text,
-          headerShadowVisible: false,
-          contentStyle: {
-            backgroundColor: theme.background,
-          },
-        }}
-      />
+      <NotesProvider>
+        <StatusBar style={isDark ? "light" : "dark"} />
+        <Stack
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: theme.background,
+            },
+            headerTintColor: theme.text,
+            headerShadowVisible: false,
+            contentStyle: {
+              backgroundColor: theme.background,
+            },
+          }}
+        />
+      </NotesProvider>
     </ThemeContext.Provider>
   );
 }

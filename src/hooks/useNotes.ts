@@ -1,31 +1,21 @@
 import { useState, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { NoteItem } from '../types';
-import { INITIAL_NOTES } from '../constants';
+import { useNotesContext } from '../context/NotesContext';
 
 export const useNotes = () => {
-  const [notes, setNotes] = useState<NoteItem[]>(INITIAL_NOTES);
+  const { notes, togglePin, deleteNote } = useNotesContext();
   const [search, setSearch] = useState('');
 
   const filteredNotes = useMemo(() => {
-    return notes
-      .filter(
-        (note) =>
-          note.title.toLowerCase().includes(search.toLowerCase()) ||
-          note.text.toLowerCase().includes(search.toLowerCase())
-      )
-      .sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+    return notes.filter(
+      (note) =>
+        note.title.toLowerCase().includes(search.toLowerCase()) ||
+        note.text.toLowerCase().includes(search.toLowerCase())
+    );
   }, [search, notes]);
 
-  const togglePin = (id: string) => {
-    setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isPinned: !n.isPinned } : n))
-    );
-  };
-
-  const deleteNote = (id: string) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-  };
+  const pinnedNotes = useMemo(() => filteredNotes.filter((n) => n.isPinned), [filteredNotes]);
+  const otherNotes = useMemo(() => filteredNotes.filter((n) => !n.isPinned), [filteredNotes]);
 
   const handleLongPress = (id: string, isPinned: boolean) => {
     Alert.alert('Note Actions', 'Choose an action for this note', [
@@ -55,7 +45,8 @@ export const useNotes = () => {
   return {
     search,
     setSearch,
-    filteredNotes,
+    pinnedNotes,
+    otherNotes,
     handleLongPress,
   };
 };

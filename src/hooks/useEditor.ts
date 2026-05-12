@@ -1,17 +1,34 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { TextInput } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useNotesContext } from '../context/NotesContext';
 
 export const useEditor = () => {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { notes, addNote, updateNote } = useNotesContext();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   
   const contentInputRef = useRef<TextInput>(null);
 
+  useEffect(() => {
+    if (id) {
+      const existingNote = notes.find((n) => n.id === id);
+      if (existingNote) {
+        setTitle(existingNote.title);
+        setContent(existingNote.text);
+      }
+    }
+  }, [id, notes]);
+
   const handleSave = () => {
-    // Logic for saving can be added here once a persistence layer is chosen
+    if (id) {
+      updateNote(id, title, content);
+    } else {
+      addNote(title, content);
+    }
     router.back();
   };
 
