@@ -4,18 +4,18 @@ export const colors = {
     surface: '#121212',
     text: '#FFFFFF',
     textSecondary: '#A0A0A0',
-    primary: '#BB86FC',
+    primary: '#E7903C',
     border: '#2C2C2C',
-    pinned: '#FFD700',
+    pinned: '#F9E9DA',
   },
   light: {
     background: '#FFFFFF',
     surface: '#F5F5F5',
     text: '#000000',
     textSecondary: '#666666',
-    primary: '#6200EE',
+    primary: '#E7903C',
     border: '#E0E0E0',
-    pinned: '#FFA000',
+    pinned: '#F9E9DA',
   },
 };
 
